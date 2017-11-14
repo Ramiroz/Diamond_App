@@ -1,0 +1,57 @@
+Diamond Price
+Shiny Application
+========================================================
+author: Ramy Hashem
+date: 14 November 2017
+autosize: true
+
+Shiny App: <https://ramiroz.shinyapps.io/ass9-4/>  
+Github: <https://github.com/Ramiroz/Diamond_App>  
+
+Diamond Price
+========================================================
+
+In this Shiny Application, I've built a model to predict the Diamond Price in USD, given the diamond size in **"Carat"** and the diamond **"Clarity"**.
+
+- Diamond size from 0.5 to 3.5 Carat 
+- Diamond Clarity with following options IF, VVS1, VVS2, VS1, VS2, SI1, SI2, I1 
+
+Shiny App User Interface & Web Server
+========================================================
+
+The **User interface** is provided on the side panel, requesting 2 inputs:  
+1- Slide Bar for the Diamond size in Carat  
+2- Drop box for the Diamond Clarity indication 
+
+The **Web Server** provides the backend calculation for a *Linear Model*.  
+The dataset of diamond was re-sampled to include 40% of the dataset size to simplify the plot presentation and reduce the time delay for the plot refresh.
+
+The right Linear Model is selected based on the Diamond Clarity and the price prediction is based on the diamond size. Displayed on the plot with a *big red dot*.
+
+Diamond Price Plot
+========================================================
+
+```{r, echo=FALSE}
+library(ggplot2)
+data(diamonds)
+
+set.seed(1000)
+diamond <- subset(diamonds,select = c("carat", "cut", "color", "clarity","price"))
+diamond <- diamond[sample(1:nrow(diamond),nrow(diamond)*.2, replace=FALSE),]
+fit_if <- lm(price~carat, data = subset(diamond,clarity == "IF", select = -clarity))
+
+qplot(carat,price,colour=clarity,data=diamond) +
+  geom_point(alpha = 0.5, size = 1, position = 'jitter',aes(color=clarity)) + 
+  geom_smooth(method='lm',formula=y~x) + scale_color_brewer(type = 'div', guide = guide_legend(title = 'Clarity', reverse = T,override.aes = list(alpha = 1, size = 2))) +
+  geom_point(aes(x=1.5, y=predict(fit_if, newdata=data.frame(carat=1.5))),color="red", size = 4)
+```
+
+
+Reference to the App
+========================================================
+
+1- Shiny App Server.R and ui.R on <https://github.com/Ramiroz/Diamond_App>  
+2- R Markdown file on  <https://github.com/Ramiroz/Diamond_App>  
+3- Shiny App <https://ramiroz.shinyapps.io/ass9-4/>  
+
+
